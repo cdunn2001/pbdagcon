@@ -87,7 +87,7 @@ bool BlasrM5AlnProvider::nextTarget(std::vector<dagcon::Alignment>& dest) {
         dest.push_back(aln);
     }
 
-    return (*is_);
+    return bool(*is_);
 }
 
 bool BlasrM5AlnProvider::nextTarget(std::string& targetSeq, std::vector<dagcon::Alignment>& dest) {
