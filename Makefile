@@ -14,8 +14,10 @@ init-submodule:
 	$(MAKE) build-submodule
 
 build-submodule:
-	$(MAKE) -C blasr_libcpp/alignment nohdf=1
-	$(MAKE) -C blasr_libcpp/pbdata
+	$(MAKE) -C blasr_libcpp/pbdata nopbbam=1 mklibconfig
+	#$(MAKE) -C blasr_libcpp/pbdata mklibconfig
+	$(MAKE) -C blasr_libcpp/alignment -f simple.mk nohdf=1
+	$(MAKE) -C blasr_libcpp/pbdata nopbbam=1
 
 submodule-clean:
 	$(RM) -r blasr_libcpp
