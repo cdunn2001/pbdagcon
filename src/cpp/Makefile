@@ -1,4 +1,6 @@
-include pbi.mk
+ifeq ($(wildcard $(PBBAM)/*),)
+  include pbi.mk
+endif
 include boost.mk
 
 COMMON_OBJECTS := Alignment.o AlnGraphBoost.o
@@ -10,23 +12,19 @@ CXXFLAGS = -O3 -std=c++11 -Wall -Wuninitialized -pedantic -I third-party \
 
 CFLAGS = -O3 -Wall -Wextra -fno-strict-aliasing
 
+INCDIRS := -I$(PBDATA) -I$(BLASR) $(EXTRA_INCDIRS)
+LDFLAGS := -L$(PBDATA) -L$(BLASR) $(EXTRA_LDFLAGS)
+
 all: pbdagcon
 
 dazcon: LDLIBS = -lpthread
 dazcon: $(COMMON_OBJECTS) $(DAZCON_OBJECTS)
 	$(CXX) -Wl,--no-as-needed $(OPTIMIZE) -o $@ $^ $(LDLIBS)
 
-# We are moving to BAM, which requires extra lib support when compiling against
-# libblasr.  This conditional allows backward compatable compilations with 
-# PacificBiosciences/blasr_libcpp.
-ifeq ($(wildcard $(PBBAM)/*),)
-pbdagcon: LDLIBS = -lpbdata -lblasr -lpthread
-else
-pbdagcon: LDLIBS = -lpbdata -lblasr -lpbbam -lhts -lz -lpthread
-endif
+pbdagcon: LDLIBS = -lpbdata -lblasr -lpthread $(EXTRA_LDLIBS)
 pbdagcon: CXXFLAGS += $(INCDIRS)
 pbdagcon: $(COMMON_OBJECTS) $(PBDAGCON_OBJECTS)
-	$(CXX) $(LIBDIRS) -static -o $@ $^ $(LDFLAGS) $(LDLIBS)
+	$(CXX) $(LIBDIRS) -Bstatic -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 $(COMMON_OBJECTS): $(BOOST_HEADERS)
 
