@@ -44,21 +44,23 @@ supply them yourself or the Makefile will obtain them for you from the
 internet.
 
 ### Compile/Check (pbdagcon)
+```sh
     # First fetch and build the relevant portions of the blasr_libcpp
     # submodule
-    > make init-submodule
+    make init-submodule
 
     # build pbdagcon executable (Makefile fetches boost headers)
-    > make
+    make
     # You already have boost headers
-    > make boost=<path to headers>
+    make boost=<path to headers>
 
     # build and run unit tests
-    > make check
+    make check
 
     # usage 
-    > cd src/cpp
-    > ./pbdagcon --help
+    cd src/cpp
+    ./pbdagcon --help
+```
 
 Running
 =======
@@ -71,13 +73,13 @@ At the most basic level, pbdagcon takes information from BLASR alignments
 sorted by target and generates fasta-formatted corrected target sequences.
 The alignments from BLASR can be formatted with either *-m 4* or *-m 5*. 
 For *-m 4* format, the alignments must be run through a format adapter, 
-*src/m4topre.py*, in order to generate suitable input to *pbdagcon*.
+*[m4topre.py][]*, in order to generate suitable input to *pbdagcon*.
 
 The following example shows the simplest way to generate a consensus for one 
 target using BLASR *-m 5* alignments as input.
 
-    > blasr queries.fasta target.fasta -bestn 1 -m 5 -out mapped.m5
-    > pbdagcon mapped.m5 > consensus.fasta
+    blasr queries.fasta target.fasta -bestn 1 -m 5 -out mapped.m5
+    pbdagcon mapped.m5 > consensus.fasta
 
 ### Use Case: Generating consensus from daligner alignments
 Can parse LAS/DB files generated from the following commits:
@@ -90,20 +92,20 @@ Walks through how one could use pbdagcon to correct PacBio reads.  This
 example demonstrates how correction is performed in PacBio's "Hierarchichal  
 Genome Assembly Process" (HGAP) workflow.  HGAP uses BLASR *-m 4* output.
 
-This example makes use of the *src/filterm4.py* and *src/m4topre.py* scripts.
-
+This example makes use of the *[filterm4.py][]* and *[m4topre.py][]* scripts:
+```sh
     # First filter the m4 file to help remove chimeras
-    > filterm4.py mapped.m4 > mapped.m4.filt
+    filterm4.py mapped.m4 > mapped.m4.filt
 
     # Next run the m4 adapter script, generating 'pre-alignments'
-    > m4topre.py mapped.m4.filt mapped.m4.filt reads.fasta 24 > mapped.pre
+    m4topre.py mapped.m4.filt mapped.m4.filt reads.fasta 24 > mapped.pre
 
     # Finally, correct using pbdagcon, typically using multiple consensus  
     # threads.
-    > pbdagcon -j 4 -a mapped.pre > corrected.fasta
+    pbdagcon -j 4 -a mapped.pre > corrected.fasta
+```
 
-The *src/cpp/pbdagcon_wf.sh* script automates this workflow.
-
+The *[pbdagcon_wf.sh][]* script automates this workflow.
 
 -----------------------------------------------------------------------------
 
@@ -115,3 +117,10 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-13166584-17', 'github.com');
 ga('send', 'pageview');
 </script>
+
+[m4topre.py]:
+  src/m4topre.py 'code'
+[filterm4.py]:
+  src/filterm4.py 'code'
+[pbdagcon_wf.sh]:
+  src/cpp/pbdagcon_wf.sh 'code'
